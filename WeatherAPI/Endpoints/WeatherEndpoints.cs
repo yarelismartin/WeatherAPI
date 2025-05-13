@@ -20,6 +20,18 @@ namespace WeatherAPI.Endpoints
 
                 return Results.Ok(currentWeather);
             });
+
+            group.MapGet("/forcast/{location}", async (IWeatherService weatherService, string location) =>
+            {
+                var forcast = await weatherService.GetFiveDayForecastAsync(location);
+
+                if (forcast == null)
+                {
+                    return Results.NotFound($"Forcast data not found for the following location: {location}");
+                }
+
+                return Results.Ok(forcast);
+            });
         }
     }
 }

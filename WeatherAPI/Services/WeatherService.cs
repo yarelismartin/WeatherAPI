@@ -50,7 +50,7 @@ namespace WeatherAPI.Services
             }
         }
 
-        // call the forecast api and pass it the returned data from the GetGeocodingDataAsync method
+        // call the get current weather api and pass it the returned data from the GetGeocodingDataAsync method
         public async Task<WeatherData> GetWeatherDataAsync(string city)
         {
             try
@@ -81,6 +81,41 @@ namespace WeatherAPI.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error in {nameof(GetWeatherDataAsync)} for city: {city}");
+                return null;
+            }
+        }
+
+        // call the forecast api to display the forecast 5 days from now
+        public async Task<ForecastResponse> GetFiveDayForecastAsync(string city)
+        {
+            try
+            {
+                var coordinates = await GetGeocodingDataAsync(city);
+
+                if (coordinates == null)
+                {
+                    _logger.LogWarning("Cannot retrieve weather: No coordinates found for city: {City}", city);
+                    return null;
+                }
+
+                var (lat, lon) = coordinates.Value;
+
+                if (lat == 0 || lon == 0)
+                {
+                    _logger.LogWarning("Coordinates returned as 0,0 for city: {City}", city);
+                    return null;
+                }
+
+                var forecastUrl = $"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={_apiKey}";
+                var response = await _httpClient.GetStringAsync(forecastUrl);
+                _logger.LogInformation($"Forecast API Response: {response}");
+
+                var forecastData = JsonSerializer.Deserialize<ForecastResponse>(response);
+                return forecastData;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error in {nameof(GetFiveDayForecastAsync)} for city: {city}");
                 return null;
             }
         }
