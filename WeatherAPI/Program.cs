@@ -21,8 +21,7 @@ builder.Services.Configure<JsonOptions>(options =>
     options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 });
 
-
-
+builder.Services.AddMemoryCache();
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRespository>();
@@ -30,7 +29,7 @@ builder.Services.AddScoped<IUserRepository, UserRespository>();
 builder.Services.AddScoped<IFavoritesService, FavoritesService>();
 builder.Services.AddScoped<IFavoritesRepository, FavoritesRepository>();
 
-builder.Services.AddScoped<IWeatherService, WeatherService>();
+//builder.Services.AddScoped<IWeatherService, WeatherService>();
 builder.Services.AddHttpClient<IWeatherService, WeatherService>();
 builder.Services.AddScoped<IWeatherRepository, WeatherRepository>();
 
