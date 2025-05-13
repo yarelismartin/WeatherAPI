@@ -31,6 +31,7 @@ builder.Services.AddScoped<IFavoritesService, FavoritesService>();
 builder.Services.AddScoped<IFavoritesRepository, FavoritesRepository>();
 
 builder.Services.AddScoped<IWeatherService, WeatherService>();
+builder.Services.AddHttpClient<IWeatherService, WeatherService>();
 builder.Services.AddScoped<IWeatherRepository, WeatherRepository>();
 
 
