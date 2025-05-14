@@ -61,6 +61,8 @@ builder.Services.AddAuthentication(cfg =>
     };
 });
 
+builder.Services.AddAuthorization();
+
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

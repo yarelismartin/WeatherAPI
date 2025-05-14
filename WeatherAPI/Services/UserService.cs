@@ -21,14 +21,15 @@ namespace WeatherAPI.Services
         {
             if (await _userRepository.UserEmailInUseAsync(dto.Email))
             {
-                return (false, "Username already exists.");
+                return (false, "Thhis email is already in use. Please try a different email.");
             }
 
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.Password);
             var user = new User
             {
                 Username = dto.Username,
-                PasswordHash = hashedPassword
+                PasswordHash = hashedPassword,
+                Email = dto.Email,
             };
 
             await _userRepository.CreateUserAsync(user);

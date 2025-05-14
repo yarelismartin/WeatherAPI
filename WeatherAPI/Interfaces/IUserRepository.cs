@@ -6,7 +6,6 @@ namespace WeatherAPI.Interfaces
     {
         Task<bool> UserEmailInUseAsync(string userEmial);
         Task<User> CreateUserAsync(User User);
-
         Task<User?> GetByEmailAsync(string email);
         bool VerifyPassword(string storedPasswordHash, string providedPassword);
     }
