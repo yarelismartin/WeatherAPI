@@ -5,6 +5,10 @@ using WeatherAPI.Endpoints;
 using WeatherAPI.Interfaces;
 using WeatherAPI.Repositories;
 using WeatherAPI.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using WeatherAPI.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +37,31 @@ builder.Services.AddScoped<IFavoritesRepository, FavoritesRepository>();
 builder.Services.AddHttpClient<IWeatherService, WeatherService>();
 builder.Services.AddScoped<IWeatherRepository, WeatherRepository>();
 
+builder.Services.AddScoped<IJWTToken, JWTToken>();
+
+builder.Services.AddAuthentication(cfg =>
+{
+    cfg.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    cfg.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    cfg.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(x =>
+{
+    x.RequireHttpsMetadata = false;
+    x.SaveToken = false;
+    x.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(builder.Configuration["ApplicationSettings:JWT_Secret"])
+        ),
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ClockSkew = TimeSpan.Zero
+    };
+});
+
+builder.Services.AddAuthorization();
 
 
 // Add services to the container.
@@ -49,6 +78,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
+
 
 app.MapUserEndpoints();
 app.MapFavoriteEndpoints(); 
