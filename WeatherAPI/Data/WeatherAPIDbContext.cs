@@ -15,8 +15,8 @@ namespace WeatherAPI.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //modelBuilder.Entity<User>().HasData(UserData.Users);
-            //modelBuilder.Entity<Favorites>().HasData(FavoritesData.Favorites);
+            modelBuilder.Entity<User>().HasData(UserData.Users);
+            modelBuilder.Entity<Favorites>().HasData(FavoritesData.Favorites);
             
         }
 
