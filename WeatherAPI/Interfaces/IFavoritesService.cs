@@ -1,6 +1,6 @@
 ﻿namespace WeatherAPI.Interfaces
 {
-    public interface IFavoritiesService
+    public interface IFavoritesService
     {
     }
 }
