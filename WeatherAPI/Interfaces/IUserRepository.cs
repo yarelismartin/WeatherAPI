@@ -8,5 +8,6 @@ namespace WeatherAPI.Interfaces
         Task<User> CreateUserAsync(User User);
         Task<User?> GetByEmailAsync(string email);
         bool VerifyPassword(string storedPasswordHash, string providedPassword);
+        Task<User?> GetUserByIdAsync(int userId);
     }
 }
