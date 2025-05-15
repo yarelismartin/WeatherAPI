@@ -37,5 +37,12 @@ namespace WeatherAPI.Repositories
             return BCrypt.Net.BCrypt.Verify(providedPassword, storedPasswordHash);
         }
 
+        public async Task<User?> GetUserByIdAsync(int userId)
+        {
+            return await dbContext.Users
+                .Include(u => u.FavoriteLocations) 
+                .FirstOrDefaultAsync(u => u.Id == userId);
+        }
+
     }
 }

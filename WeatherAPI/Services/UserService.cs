@@ -3,6 +3,7 @@ using System.Net;
 using WeatherAPI.DTO;
 using WeatherAPI.Interfaces;
 using WeatherAPI.Models;
+using Serilog;
 
 namespace WeatherAPI.Services
 {
@@ -19,21 +20,32 @@ namespace WeatherAPI.Services
 
         public async Task<(bool Success, string Message)> RegisterAsync(RegisterUserDTO dto)
         {
-            if (await _userRepository.UserEmailInUseAsync(dto.Email))
+            try
             {
-                return (false, "Thhis email is already in use. Please try a different email.");
+                if (await _userRepository.UserEmailInUseAsync(dto.Email))
+                {
+                    Log.Information("Attempt to register with already used email: {Email}", dto.Email);
+                    return (false, "This email is already in use. Please try a different email.");
+                }
+
+                var hashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+                var user = new User
+                {
+                    Username = dto.Username,
+                    PasswordHash = hashedPassword,
+                    Email = dto.Email,
+                };
+
+                var result = await _userRepository.CreateUserAsync(user);
+                Log.Information("User created successfully: {@User}", result);
+
+                return (true, "User registered successfully.");
             }
-
-            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.Password);
-            var user = new User
+            catch (Exception ex)
             {
-                Username = dto.Username,
-                PasswordHash = hashedPassword,
-                Email = dto.Email,
-            };
-
-            await _userRepository.CreateUserAsync(user);
-            return (true, "User registered successfully.");
+                Log.Error(ex, "Error occurred in RegisterAsync for email: {Email}", dto.Email);
+                throw; 
+            }
         }
 
         public async Task<string?> LoginAsync(LoginUserDTO dto)
