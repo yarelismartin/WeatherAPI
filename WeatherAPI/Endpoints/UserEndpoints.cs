@@ -2,6 +2,7 @@
 using WeatherAPI.Interfaces;
 using WeatherAPI.Models;
 using Microsoft.AspNetCore.Authorization;
+using Serilog;
 
 
 namespace WeatherAPI.Endpoints
@@ -14,12 +15,24 @@ namespace WeatherAPI.Endpoints
 
             group.MapPost("/register", async (IUserService userService, RegisterUserDTO registerDTO) =>
             {
-                var (success, message) = await userService.RegisterAsync(registerDTO);
+                try
+                {
+                    var (success, message) = await userService.RegisterAsync(registerDTO);
 
-                if (!success)
-                    return Results.Conflict(message);
+                    if (!success)
+                    {
+                        Log.Warning("Registration failed: {Message}", message);
+                        return Results.Conflict(message);
+                    }
 
-                return Results.Ok(message);
+                    Log.Information("User registered: {Email}", registerDTO.Email);
+                    return Results.Ok(message);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "An error occurred during user registration");
+                    return Results.Problem("An unexpected error occurred. Please try again later.");
+                }
             });
 
 

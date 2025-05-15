@@ -3,6 +3,7 @@ using System.Security.Claims;
 using WeatherAPI.DTO;
 using WeatherAPI.Interfaces;
 using WeatherAPI.Models;
+using Serilog;
 
 namespace WeatherAPI.Endpoints
 {
