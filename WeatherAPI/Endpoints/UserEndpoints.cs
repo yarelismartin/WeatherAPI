@@ -38,14 +38,24 @@ namespace WeatherAPI.Endpoints
 
             group.MapPost("/login", async (IUserService userService, LoginUserDTO dto) =>
             {
-                var token = await userService.LoginAsync(dto);
-
-                if (token == null)
+                try
                 {
-                    return Results.Unauthorized();
-                }
+                    var (success, tokenOrMessage) = await userService.LoginAsync(dto);
 
-                return Results.Ok(new { token });
+                    if(!success)
+                    {
+                        Log.Warning("Login failed: {Message}", tokenOrMessage);
+                        return Results.Conflict(tokenOrMessage);
+                    }
+
+                    return Results.Ok(new { token = tokenOrMessage });
+
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "An error occurred during login");
+                    return Results.Problem("An unexpected error occurred. Please try again later.");
+                }
             });
 
         }
