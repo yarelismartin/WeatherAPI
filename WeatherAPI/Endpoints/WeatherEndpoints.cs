@@ -1,5 +1,7 @@
-﻿using WeatherAPI.Interfaces;
+﻿using Serilog;
+using WeatherAPI.Interfaces;
 using WeatherAPI.Models;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace WeatherAPI.Endpoints
 {
@@ -11,26 +13,50 @@ namespace WeatherAPI.Endpoints
 
             group.MapGet("/{location}", async (IWeatherService weatherService, string location) =>
             {
-                var currentWeather = await weatherService.GetWeatherDataAsync(location);
 
-                if (currentWeather == null)
+                try
                 {
-                    return Results.NotFound($"Weather data not found for the following location: {location}");
+                    var (success, data, message) = await weatherService.GetWeatherDataAsync(location);
+
+                    if (!success || data == null)
+                    {
+                        Log.Warning("Weather data not found for the following location: {Location}", location);
+                        return Results.NotFound(message);
+                    }
+
+                    Log.Information("Current Weather fetched successfully: {FavoritedLocations}", data);
+                    return Results.Ok(data);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "An error occured while fetching current weather for {City}", location);
+                    return Results.Problem("An unexpected error occurred. Please try again later.");
                 }
 
-                return Results.Ok(currentWeather);
             });
 
             group.MapGet("/forcast/{location}", async (IWeatherService weatherService, string location) =>
             {
-                var forcast = await weatherService.GetFiveDayForecastAsync(location);
-
-                if (forcast == null)
+                try
                 {
-                    return Results.NotFound($"Forcast data not found for the following location: {location}");
-                }
+                    var (success, data, message) = await weatherService.GetFiveDayForecastAsync(location);
+                    
+                    if (!success || data == null)
+                    {
+                        Log.Warning("Forecast data not found for the following location: {Location}", location);
+                        return Results.NotFound(message);
+                    }
 
-                return Results.Ok(forcast);
+                    Log.Information("Current Weather fetched successfully: {FavoritedLocations}", data);
+                    return Results.Ok(data);
+
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "An error occured while fetching current weather for {City}", location);
+                    return Results.Problem("An unexpected error occurred. Please try again later.");
+                }
+                
             });
         }
     }

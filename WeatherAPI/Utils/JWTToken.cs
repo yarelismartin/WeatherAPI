@@ -28,11 +28,11 @@ namespace WeatherAPI.Utils
             // Creating the JWT token
             var jwtToken = new JwtSecurityToken(
                 claims: claims,  // Adding claims
-                notBefore: DateTime.UtcNow,  // Token becomes valid immediately
-                expires: DateTime.UtcNow.AddDays(30),  // Token expires in 30 days
+                notBefore: DateTime.UtcNow,  
+                expires: DateTime.UtcNow.AddDays(30), 
                 signingCredentials: new SigningCredentials(
-                    new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["ApplicationSettings:JWT_Secret"])),  // Symmetric security key for signing
-                    SecurityAlgorithms.HmacSha256Signature  // Signing algorithm
+                    new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["ApplicationSettings:JWT_Secret"])), 
+                    SecurityAlgorithms.HmacSha256Signature 
                 )
             );
 

@@ -19,13 +19,30 @@ namespace WeatherAPI.Endpoints
 
                 if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int parsedUserId))
                 {
-                    logger.LogWarning("Unauthorized request to get favorites — no valid user ID in token.");
+                    Log.Warning("Unauthorized request to get favorites — no valid user ID in token.");
                     return Results.Unauthorized();
                 }
 
-                var result = await favoritesService.GetUsersFavoritesAsync(parsedUserId);
-                
-                return result;
+                try
+                {
+
+                    var (success, userFavorites,  message) = await favoritesService.GetUsersFavoritesAsync(parsedUserId);
+
+                    if (!success)
+                    {
+                        Log.Warning("Fetching Favorites failed: {Message}", message);
+                        return Results.NotFound(message);
+                    }
+
+                    Log.Information("User favorited fetched successfully: {FavoritedLocations}", userFavorites);
+                    return Results.Ok(userFavorites);
+
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "An error occured while fetching users favorited location");
+                    return Results.Problem("An unexpected error occurred. Please try again later.");
+                }
             });
 
             group.MapPost("/", async (HttpContext context, IFavoritesService favoriteService, ILogger < Program > logger, AddFavoriteDTO dto) =>
@@ -34,20 +51,26 @@ namespace WeatherAPI.Endpoints
 
                 if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int parsedUserId))
                 {
-                    logger.LogWarning("Unauthorized request to add favorite — no valid user ID in token.");
+                    Log.Warning("Unauthorized request to add favorite — no valid user ID in token.");
                     return Results.Unauthorized();
                 }
 
                 try
                 {
-                    await favoriteService.AddFavoriteLocationAsync(parsedUserId, dto.LocationId);
-                    logger.LogInformation("User {UserId} added location {LocationId} to favorites.", parsedUserId, dto.LocationId);
-                    return Results.Ok(new { message = "Location added to favorites." });
+                    var (success, message) = await favoriteService.AddFavoriteLocationAsync(parsedUserId, dto.LocationId);
+                    if (!success)
+                    {
+                        Log.Warning("Add favorite failed: {Message}", message);
+                        return Results.BadRequest(message);
+                    }
+
+                    Log.Information("User {UserId} added location {LocationId} to favorites.", userId, dto.LocationId);
+                    return Results.Ok(new { message });
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "Failed to add favorite for user {UserId}", parsedUserId);
-                    return Results.Problem("Failed to add favorite.");
+                    Log.Error(ex, "Failed to add favorite for user {UserId}", userId);
+                    return Results.Problem("An unexpected error occurred while adding the favorite.");
                 }
             });
 
@@ -58,19 +81,25 @@ namespace WeatherAPI.Endpoints
 
                 if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int parsedUserId))
                 {
-                    logger.LogWarning("Unauthorized request to add favorite — no valid user ID in token.");
+                    Log.Warning("Unauthorized request to add favorite — no valid user ID in token.");
                     return Results.Unauthorized();
                 }
 
                 try
                 {
-                    await favoriteService.RemoveFavoriteLocationAsync(parsedUserId, id);
-                    logger.LogInformation("User {UserId} removed location {LocationId} from favorites.", parsedUserId, id);
+                    var (success, message) = await favoriteService.RemoveFavoriteLocationAsync(parsedUserId, id);
+                    if (!success)
+                    {
+                        Log.Warning("Remove favorite failed: {Message}", message);
+                        return Results.BadRequest(message);
+                    }
+
+                    Log.Information("User {UserId} removed location {LocationId} from favorites.", userId, id);
                     return Results.NoContent();
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "Failed to remove favorite for user {UserId}", parsedUserId);
+                    Log.Error(ex, "Failed to remove favorite for user {UserId}", parsedUserId);
                     return Results.Problem("Failed to remove favorite.");
                 }
             });

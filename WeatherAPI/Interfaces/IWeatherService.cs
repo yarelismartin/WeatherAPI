@@ -4,8 +4,8 @@ namespace WeatherAPI.Interfaces
 {
     public interface IWeatherService
     {
-        Task<(double lat, double lon)?> GetGeocodingDataAsync(string city);
-        Task<WeatherData> GetWeatherDataAsync(string city);
-        Task<ForecastResponse> GetFiveDayForecastAsync(string city);
+        Task<(bool success, (double lat, double lon)? coordinates, string message)> GetGeocodingDataAsync(string city);
+        Task<(bool success, WeatherData? data, string message)> GetWeatherDataAsync(string city);
+        Task<(bool success, ForecastResponse? data, string message)> GetFiveDayForecastAsync(string city);
     }
 }
