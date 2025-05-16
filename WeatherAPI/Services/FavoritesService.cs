@@ -10,18 +10,14 @@ namespace WeatherAPI.Services
     {
         private readonly IFavoritesRepository _favoritesRepository;
         private readonly IUserRepository _userRepository;
-        private readonly IJWTToken _jWTToken;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly ILogger<FavoritesService> _logger;
 
 
-        public FavoritesService(IFavoritesRepository favoritesRepository, IJWTToken jWTToken, IHttpContextAccessor httpContextAccessor, ILogger<FavoritesService> logger, IUserRepository userRepository)
+
+        public FavoritesService(IFavoritesRepository favoritesRepository, IUserRepository userRepository)
         {
             _favoritesRepository = favoritesRepository;
             _userRepository = userRepository;
-            _jWTToken = jWTToken;
-            _httpContextAccessor = httpContextAccessor;
-            _logger = logger;
+
         }
 
         public async Task<(bool Success, string Message)> AddFavoriteLocationAsync(int userId, int locationId)
