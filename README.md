@@ -130,7 +130,7 @@ To register a user, you'll need a request body similar to the one below, contain
   }
   ```
 
-- **500 Internal Server Erro**
+- **500 Internal Server Error**
   ```json
   {
     "message": "An unexpected error occurred. Please try again later."
@@ -175,7 +175,7 @@ Returned when the provided email does not match any user in the database.
   ```
 Returned when the email exists but the provided password does not match the stored hash.
 
- - **500 Internal Server Erro**
+ - **500 Internal Server Error**
   ```json
   {
     "message": "An unexpected error occurred. Please try again later."
@@ -232,7 +232,7 @@ This endpoint retrieves the current weather data for the specified location usin
 
 
 ##### Error Responses
-- **404 NoFound**
+- **404 NotFound**
   ```json
   {
     "message": "City name cannot be empty."
@@ -240,7 +240,7 @@ This endpoint retrieves the current weather data for the specified location usin
   ```
   The city string passed was empty.
   
-- **404 NoFound**
+- **404 NotFound**
     ```json
   {
     "message": "No location data found for this city."
@@ -310,7 +310,7 @@ This endpoint retrieves the 5-day weather forecast for the specified location us
     }
     ```
 ##### Error Responses
-- **404 NoFound**
+- **404 NotFound**
   ```json
   {
     "message": "City name cannot be empty."
@@ -318,7 +318,7 @@ This endpoint retrieves the 5-day weather forecast for the specified location us
   ```
   The city string passed was empty.
 
-  - **404 NoFound**
+  - **404 NotFound**
   ```json
   {
     "message": "No location data found for this city."
@@ -326,7 +326,7 @@ This endpoint retrieves the 5-day weather forecast for the specified location us
   ```
 Geocoding failed or returned invalid coordinates (0,0).
 
-  - **404 NoFound**
+  - **404 NotFound**
   ```json
   {
     "message": "Failed to parse forecast data for the city."
@@ -358,7 +358,7 @@ This endpoint allows an authenticated user to add a location to their list of fa
   ```
 
 ##### Error Responses
- - **401 Unauthroized**
+ - **401 Unauthorized**
   ```json
   {
     "message": "Unauthorized"
@@ -378,7 +378,7 @@ This endpoint allows an authenticated user to add a location to their list of fa
     "message": "Location is already in favorites."
   }
   ```
- - **500 Internal Server Error**
+ - **500 Internal Server Errorr**
   ```json
   {
     "message": "An unexpected error occurred while adding the favorite."
@@ -418,7 +418,7 @@ This endpoint retrieves the list of favorite locations for the authenticated use
     "message": "No favorite locations found."
   }
   ```
-- **500 Internal Server Error**
+- **500 Internal Server Errorr**
   ```json
   {
     "message": "An unexpected error occurred. Please try again later."
@@ -434,7 +434,7 @@ This endpoint allows an authenticated user to remove a location from their list 
 - **204 No Content**  
 
 ##### Error Responses
-- **401 Unauthorized**  
+- **Unauthorized**  
   ```json
   {
     "message": "Unauthorized."
@@ -454,7 +454,7 @@ This endpoint allows an authenticated user to remove a location from their list 
     "message": "The location you are trying to remove is not in favorites."
   }
   ```
-- **500 Internal Server Error**
+- **500 Internal Server Errorr**
   ```json
   {
     "message": "Failed to remove favorite."
