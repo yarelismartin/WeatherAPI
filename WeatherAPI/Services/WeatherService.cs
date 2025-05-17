@@ -136,6 +136,12 @@ namespace WeatherAPI.Services
         // call the forecast api to display the forecast 5 days from now
         public async Task<(bool success, ForecastResponse? data, string message)> GetFiveDayForecastAsync(string city)
         {
+            if (string.IsNullOrWhiteSpace(city))
+            {
+                Log.Warning("City input is null or whitespace.");
+                return (false, null, "City name cannot be empty.");
+            }
+
             var cacheKey = $"forecast_{city.ToLower()}";
 
             if (_cache.TryGetValue(cacheKey, out ForecastResponse cachedForecast))

@@ -11,7 +11,7 @@ namespace WeatherAPI.Tests
         private readonly Mock<IUserRepository> _mockUserRepo;
         private readonly FavoritesService _service;
 
-        public FavoritesServiceTests()
+        public FavoriteServiceTests()
         {
             _mockFavoritesRepo = new Mock<IFavoritesRepository>();
             _mockUserRepo = new Mock<IUserRepository>();
