@@ -3,11 +3,10 @@
 ## Table of Contents
 - [Project Overview](#project-overview)
 - [Setup Instructions](#setup-instructions)
-- [API Documentation](#api-documentation)
   - [Models](#models)
     - [User](#user)
     - [Location](#location)
-  - [Endpoints](#endpoints)
+- [API Documentation](#api-documentation)
     - [POST /api/auth/register](#post-apiauthregister)
     - [POST /api/auth/login](#post-apiauthlogin)
     - [GET /api/weather/{location}](#get-apiweatherlocation)
@@ -21,8 +20,67 @@
 ---
 
 ## Setup Instructions
+#### For this project to run successfully, you'll need the following:
 
-## API Documentation
+- [Visual Studio](https://visualstudio.microsoft.com/downloads/?cid=learn-onpage-download-install-visual-studio-page-cta)
+- [.NET](https://dotnet.microsoft.com/en-us/)
+- [pgAdmin](https://www.pgadmin.org/)
+- [PostgreSQL](https://www.postgresql.org/download/)
+
+Follow these steps to set up the **Weather API**:
+#### 1. Fork and Clone the Repository
+Fork the repository, then clone it to your local machine.
+
+```
+git@github.com:yarelismartin/WeatherAPI.git
+```
+#### 2. Open in Visual Studio 2022
+Open the solution file (`.sln`) in **Visual Studio 2022**.
+
+#### 3. Restore Dependencies
+Run the following command to restore project dependencies:
+
+```
+dotnet restore
+```
+
+#### 4. Configure User Secrets
+Initialize user secrets and set your PostgreSQL connection string:
+```
+dotnet user-secrets init
+dotnet user-secrets set "WatherAPIDbConnectionString" "Host=localhost;Port=5432;Username=postgres;Password=<your_postgresql_password>;Database=WeatherAPI"
+```
+Replace `<your_postgresql_password>` with your actual database password.
+
+The `appsettings.json` file is already pre-configured with:
+- Your OpenWeatherMap API key
+- JWT secret for authentication
+So no additional configuration is needed — you're good to go!
+
+#### 5. Apply Migrations and Create the Database
+Before running the update command, make sure the EF Core CLI is installed. This tool is required to apply the existing migrations:
+
+```
+dotnet tool install --global dotnet-ef
+```
+
+Once installed, apply the migrations to create the database:
+
+```
+dotnet ef database update
+```
+
+#### 6. Start Debugging
+Run the project in debug mode by selecting the **Start Debugging** option in Visual Studio. This will launch the API, and you can access Swagger to test the endpoints.
+
+#### 7. Test the API
+You can use the built-in Swagger UI to test your endpoints.
+This API uses JWT authentication.
+**To test protected routes:**
+- First, register and log in using the API.
+- Copy the JWT token from the login response.
+- Click "Authorize" (the lock icon in Swagger) and paste the token.
+
 
 ### Models
 
@@ -43,7 +101,7 @@
 | FavoritedByUsers  | List\<User\> |                      |
 
 
-### Endpoints
+###  API Documentation
 
 #### `POST /api/auth/register`
 To register a user, you'll need a request body similar to the one below, containing a username, email, and password. For privacy protection, the password is not stored directly in the database. Instead, a hashedPassword property stores a version of the password that has gone through the process of being securely hashed using the BCrypt algorithm, ensuring that the original plain-text password cannot be easily retrieved or exposed.
