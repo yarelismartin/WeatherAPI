@@ -26,7 +26,7 @@ namespace WeatherAPI.Endpoints
                     }
 
                     Log.Information("User registered: {Email}", registerDTO.Email);
-                    return Results.Ok(message);
+                    return Results.Created("", message);
                 }
                 catch (Exception ex)
                 {
