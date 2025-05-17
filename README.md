@@ -7,13 +7,11 @@
   - [Models](#models)
     - [User](#user)
     - [Location](#location)
-    - [WeatherData](#weatherdata)
-    - [ForecastResponse](#forecastresponse)
   - [Endpoints](#endpoints)
     - [POST /api/auth/register](#post-apiauthregister)
     - [POST /api/auth/login](#post-apiauthlogin)
-    - [GET /api/weather/current?city={city}](#get-apiweathercurrentcitycity)
-    - [GET /api/weather/forecast?city={city}](#get-apiweatherforecastcitycity)
+    - [GET /api/weather/{location}](#get-apiweatherlocation)
+    - [GET /api/weather/forecast/{location}](#get-apiweatherforecastlocation)
     - [POST /api/favorites](#post-apifavorites)
     - [GET /api/favorites](#get-apifavorites)
     - [DELETE /api/favorites/{id}](#delete-apifavoritesid)
@@ -29,35 +27,23 @@
 ### Models
 
 #### User
-| Property | Type   | Description          |
-|----------|--------|----------------------|
-| Id       | int    |                      |
-| Email    | string |                      |
-| Password | string | (Hashed)             |
-| FavoriteLocations | List\<Location\> |   |
+| Property      | Type   | Description          |
+|---------------|--------|----------------------|
+| Id            | int    |                      |
+| Username      | string |                      |
+| Email         | string |                      |
+| PasswordHash  | string | (Hashed)             |
+| FavoriteLocations | List\<Location\> |        |
 
 #### Location
-| Property | Type   | Description          |
-|----------|--------|----------------------|
-| Id       | int    |                      |
-| Name     | string |                      |
+| Property          | Type         | Description          |
+|-------------------|--------------|----------------------|
+| Id                | int          |                      |
+| Name              | string       |                      |
+| FavoritedByUsers  | List\<User\> |                      |
 
-#### WeatherData
-| Property | Type   | Description          |
-|----------|--------|----------------------|
-| Temp     | float  |                      |
-| Summary  | string |                      |
-| Wind     | float  |                      |
-| ...      | ...    |                      |
-
-#### ForecastResponse
-| Property | Type   | Description          |
-|----------|--------|----------------------|
-| List     | List\<WeatherData\> |        |
-| City     | string |                      |
 
 ### Endpoints
-
 
 #### `POST /api/auth/register`
 To register a user, you'll need a request body similar to the one below, containing a username, email, and password. For privacy protection, the password is not stored directly in the database. Instead, a hashedPassword property stores a version of the password that has gone through the process of being securely hashed using the BCrypt algorithm, ensuring that the original plain-text password cannot be easily retrieved or exposed.
@@ -145,15 +131,48 @@ This endpoint retrieves the current weather data for the specified location usin
 
 ##### Success Responses
 - **200 OK**  
-  ```json
-  {
-    "location": "New York",
-    "temperature": "16°C",
-    "description": "Cloudy",
-    "source": "cache" // or "api"
-  }
+    ```json
+    {
+      "coord": {
+        "lon": -86.7743,
+        "lat": 36.1623
+      },
+      "weather": [
+        {
+          "id": 804,
+          "main": "Clouds",
+          "description": "overcast clouds",
+          "icon": "04d"
+        }
+      ],
+      "main": {
+        "temp": 300.88,
+        "feels_like": 303.54,
+        "temp_min": 299.77,
+        "temp_max": 301.48,
+        "pressure": 1006,
+        "humidity": 72,
+        "sea_level": 1006,
+        "grnd_level": 985
+      },
+      "wind": {
+        "speed": 4.47,
+        "deg": 230,
+        "gust": 8.49
+      },
+      "clouds": {
+        "all": 100
+      },
+      "sys": {
+        "sunrise": 1747392005,
+        "sunset": 1747442824
+      },
+      "name": "Nashville",
+      "cod": 200
+    }
     ```
-  Weather data was successfully retrieved.
+    Weather data was successfully retrieved.
+
 
 ##### Error Responses
 - **404 NoFound**
@@ -183,26 +202,56 @@ This endpoint retrieves the current weather data for the specified location usin
 This endpoint retrieves the 5-day weather forecast for the specified location using the OpenWeather API. The service first checks an in-memory cache for existing forecast data for the location. If cached data is found, it is returned immediately. Otherwise, the service fetches fresh forecast data from the OpenWeather API, caches it for 30 minutes, and then returns it.
 
 ##### Success Responses
- - **200 Ok**
-  ```json
-  {
-  "location": "New York",
-  "forecast": [
+- **200 OK**  
+    ```json
     {
-      "date": "2025-05-16",
-      "temperature": "18°C",
-      "description": "Partly cloudy"
-    },
-    {
-      "date": "2025-05-17",
-      "temperature": "20°C",
-      "description": "Sunny"
+      "cod": "200",
+      "message": 0,
+      "cnt": 40,
+      "list": [
+        {
+          "dt": 1747440000,
+          "main": {
+            "temp": 300.88,
+            "feels_like": 303.54,
+            "temp_min": 300.41,
+            "temp_max": 300.88,
+            "pressure": 1006,
+            "humidity": 72,
+            "sea_level": 1006,
+            "grnd_level": 985
+          },
+          "weather": [
+            {
+              "id": 500,
+              "main": "Rain",
+              "description": "light rain",
+              "icon": "10d"
+            }
+          ],
+          "clouds": {
+            "all": 100
+          },
+          "wind": {
+            "speed": 5.6,
+            "deg": 212,
+            "gust": 13.05
+          },
+          "visibility": 10000,
+          "pop": 1,
+          "rain": {
+            "3h": 0.56
+          },
+          "sys": {
+            "sunrise": 0,
+            "sunset": 0
+          },
+          "dt_txt": "2025-05-17 00:00:00"
+        }
+        // more forecast items...
+      ]
     }
-    // more days...
-  ],
-  "source": "cache" // or "api"
-}
-  ```
+    ```
 ##### Error Responses
 - **404 NoFound**
   ```json
@@ -285,25 +334,19 @@ This endpoint retrieves the list of favorite locations for the authenticated use
 
 ##### Success Responses
 - **200 OK**  
-  ```json
-  [
-    {
-      "id": 123,
-      "name": "New York",
-      "country": "US",
-      "latitude": 40.7128,
-      "longitude": -74.0060
-    },
-    {
-      "id": 456,
-      "name": "Los Angeles",
-      "country": "US",
-      "latitude": 34.0522,
-      "longitude": -118.2437
-    }
-    // ... more favorite locations
-  ]
+    ```json
+    [
+      {
+        "id": 1,
+        "name": "New York City"
+      },
+      {
+        "id": 3,
+        "name": "Chicago"
+      }
+    ]
     ```
+
 ##### Error Responses
 - **401 Unauthorized**
   ```json
@@ -327,10 +370,12 @@ This endpoint retrieves the list of favorite locations for the authenticated use
   
 ---
 #### `DELETE /api/favorites/{id}`
+This endpoint allows an authenticated user to remove a location from their list of favorite locations by specifying the location's ID in the URL path. The client must include a valid authentication token to verify the user's identity and authorize the removal action.
+
+
 ##### Success Responses
 - **204 No Content**  
-This endpoint allows an authenticated user to remove a location from their list of favorite locations by specifying the location's ID in the URL path. The client must include a valid authentication token to verify the user's identity and authorize the removal action.
-  
+
 ##### Error Responses
 - **401 Unauthorized**  
   ```json
