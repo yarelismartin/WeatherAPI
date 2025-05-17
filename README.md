@@ -1,7 +1,6 @@
 # WeatherAPI
 
 ## Table of Contents
-- [Project Overview](#project-overview)
 - [Setup Instructions](#setup-instructions)
   - [Models](#models)
     - [User](#user)
@@ -48,7 +47,7 @@ dotnet restore
 Initialize user secrets and set your PostgreSQL connection string:
 ```
 dotnet user-secrets init
-dotnet user-secrets set "WatherAPIDbConnectionString" "Host=localhost;Port=5432;Username=postgres;Password=<your_postgresql_password>;Database=WeatherAPI"
+dotnet user-secrets set "WeatherAPIDbConnectionString" "Host=localhost;Port=5432;Username=postgres;Password=<your_postgresql_password>;Database=WeatherAPI"
 ```
 Replace `<your_postgresql_password>` with your actual database password.
 
@@ -464,4 +463,7 @@ This endpoint allows an authenticated user to remove a location from their list 
 ---
 ## Architecture Decisions
 
+I created a RESTful API using the minimal API structure to maintain simplicity and scalability. The design follows a repository pattern that separates concerns by having the endpoint layer manage responses, status codes, and authorization checks with tokens. The service layer handles business logic and crafts messages tailored to different scenarios, while the repository layer takes care of data retrieval and modification. Logging is incorporated in both the service and endpoint layers to capture warnings, informational messages, and errors, which enhances traceability and debugging.
+
 ## Running Tests
+In Visual Studio, navigate to the "Test" menu at the top, then select "Run All Tests". This will execute all unit tests and display the results in the Test Explorer.
