@@ -52,9 +52,9 @@ dotnet user-secrets set "WeatherAPIDbConnectionString" "Host=localhost;Port=5432
 Replace `<your_postgresql_password>` with your actual database password.
 
 The `appsettings.json` file is already pre-configured with:
-- Your OpenWeatherMap API key
+- My OpenWeatherMap API key
 - JWT secret for authentication
-So no additional configuration is needed — you're good to go!
+So no additional configuration is needed.
 
 #### 5. Apply Migrations and Create the Database
 Before running the update command, make sure the EF Core CLI is installed. This tool is required to apply the existing migrations:
@@ -78,7 +78,7 @@ This API uses JWT authentication.
 **To test protected routes:**
 - First, register and log in using the API.
 - Copy the JWT token from the login response.
-- Click "Authorize" (the lock icon in Swagger) and paste the token.
+- Click "Authorize" (the lock icon in Swagger) and paste the token string.
 
 
 ### Models
